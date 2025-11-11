@@ -22,8 +22,43 @@ Spring Profilesを使用して、Docker環境とローカル開発環境の両�
 
 ### 1. 環境変数ファイル
 
-`.env`ファイルが`docker/`ディレクトリに必要です
-.env.sampleを使用してください
+プロジェクトのセットアップには以下の環境変数ファイルが必要です：
+
+#### Docker環境用 (.env)
+`docker/`ディレクトリに`.env`ファイルを作成してください：
+
+```bash
+# docker/.env.sampleをコピーして作成
+cp docker/.env.sample docker/.env
+
+# 必要に応じて値を編集
+vi docker/.env
+```
+
+#### バックエンド用 (.env)
+`kyodoApp_backend/`ディレクトリに`.env`ファイルを作成してください：
+
+```bash
+# kyodoApp_backend/.env.sampleをコピーして作成
+cp kyodoApp_backend/.env.sample kyodoApp_backend/.env
+
+# プレースホルダーを実際の値に置き換え
+vi kyodoApp_backend/.env
+```
+
+**設定例:**
+```bash
+# kyodoApp_backend/.env
+SPRING_DATASOURCE_USERNAME=hoge
+SPRING_DATASOURCE_PASSWORD=your_secure_password
+LOCAL_MYSQL_USER=kotaro
+LOCAL_MYSQL_PASSWORD=your_secure_password
+```
+
+**⚠️ 重要:** 
+- `.env`ファイルは機密情報を含むため、Gitにコミットしないでください
+- `.env.sample`ファイルのみがリポジトリで管理されます
+- チーム内で環境変数を共有する場合は、セキュアな方法を使用してください
 
 
 ### 2. Spring Profiles
