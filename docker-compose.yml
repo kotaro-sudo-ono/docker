@@ -30,12 +30,9 @@ services:
       dockerfile: Dockerfile
     container_name: kyudo-backend
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/kyudo_app
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: none
-      SPRING_APPLICATION_NAME: kyudo_app
-      SERVER_PORT: 8081
+      SPRING_PROFILES_ACTIVE: docker
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "8081:8081"
     depends_on:
