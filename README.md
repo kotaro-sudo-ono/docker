@@ -142,7 +142,7 @@ docker-compose ps mysql
 
 **データベース接続テスト:**
 ```bash
-mysql -h localhost -P 13306 -u kotaro -p kyudo_app
+mysql -h localhost -P 13306 -u [your_username] -p kyudo_app
 ```
 
 ## 🔄 停止・クリーンアップ
