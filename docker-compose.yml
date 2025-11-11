@@ -1,0 +1,84 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ../sample_app/my-kyudo-app
+      dockerfile: docker/Dockerfile
+    container_name: kyudo-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../sample_app/my-kyudo-app:/app
+      - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 10s
+    env_file:
+      - ../sample_app/my-kyudo-app/.env
+
+  backend:
+    build:
+      context: ../kyodoApp_backend
+      dockerfile: Dockerfile
+    container_name: kyudo-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/kyudo_app
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_APPLICATION_NAME: kyudo_app
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+    env_file:
+      - ../kyodoApp_backend/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health || exit 1"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 10s
+
+  mysql:
+    image: mysql:8.0.33
+    container_name: kyudo-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "13306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ../sample_app/my-kyudo-app/init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      retries: 3
+      start_period: 30s
+      timeout: 10s
+    command: --bind-address=0.0.0.0
+
+volumes:
+  mysql-data:
+  node_modules:
+
+networks:
+  app-network:
+    driver: bridge
